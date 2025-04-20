@@ -12,14 +12,13 @@ module u_tx #(
 );
 
   // Durum tanımları
-parameter IDLE    = 3'd0,
-          START   = 3'd1,
-          DATA    = 3'd2,
-          STOP    = 3'd3,
-          CLEANUP = 3'd4;
+parameter IDLE    = 2'b00,
+          START   = 2'b01,
+          DATA    = 2'b10,
+          STOP    = 2'b11;
 
 // Durum değişkeni
-reg [2:0] state;
+reg [1:0] state;
 
 // Başlangıç durumu
 initial begin
@@ -51,24 +50,20 @@ end
                 tx_data_out <= data_in[bit_index];
 
                 if (baud_en_tx) begin
-                    if (bit_index == width - 1) begin
+                    if (bit_index == width - 1) 
                         state <= STOP;
                     else
                         bit_index <= bit_index + 1;
-                    end
-                end
+                    
             end
-
+            end
             STOP: begin
                 tx_data_out <= 1; // Stop bit
                 if (baud_en_tx)
-                    state <= CLEANUP;
+                    state <= IDLE;
             end
-
-            CLEANUP: begin
-                tx_active <= 0;
-                state <= IDLE;
-            end
+        
+           
         endcase
     end
 endmodule

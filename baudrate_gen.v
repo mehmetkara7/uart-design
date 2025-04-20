@@ -1,7 +1,7 @@
 module baudrate_gen #(
     parameter integer osc_freq = 100_000_000,
     parameter integer no_of_sample = 16,
-    parameter integer baud_rate = 9600
+    parameter integer baud_rate = 115_200
 )(
     input wire clk,
     input wire rx_active,
@@ -20,7 +20,7 @@ module baudrate_gen #(
     always @(posedge clk) begin
         // RX için sayaç
         if (rx_active) begin
-            if (rx_count == CLKS_PER_BAUD - 1) begin
+            if (rx_count == (CLKS_PER_BAUD/2) - 1) begin
                 rx_count <= 0;
                 baud_en_rx <= 1;
             end else begin
@@ -34,7 +34,7 @@ module baudrate_gen #(
 
         // TX için sayaç
         if (tx_active) begin
-            if (tx_count == CLKS_PER_BAUD - 1) begin
+            if (tx_count == (8*CLKS_PER_BAUD) - 1) begin
                 tx_count <= 0;
                 baud_en_tx <= 1;
             end else begin
